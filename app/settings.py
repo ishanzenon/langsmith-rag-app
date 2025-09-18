@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Final, TypedDict
+from typing import Final, Optional, TypedDict, Any
 
 from dotenv import load_dotenv
 
@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 class BlogPost(TypedDict):
     """Typed representation of a LessWrong blog post configuration."""
 
+    id: Optional[Any]
     title: str
     url: str
 
@@ -73,22 +74,27 @@ EXPERIMENT_METADATA_VERSION: Final[str] = "LCEL context, gpt-4-0125-preview"
 # Catalog of LessWrong posts consumed by the ingestion pipeline.
 LESSWRONG_POSTS: Final[tuple[BlogPost, ...]] = (
     {
+        "id": 1,
         "title": "Mechanistic Interpretability Quickstart Guide — Neel Nanda",
         "url": "https://www.lesswrong.com/posts/jLAvJt8wuSFySN975/mechanistic-interpretability-quickstart-guide",
     },
     {
+        "id": 2,
         "title": "A Barebones Guide to Mechanistic Interpretability Prerequisites — Neel Nanda",
         "url": "https://www.lesswrong.com/posts/AaABQpuoNC8gpHf2n/a-barebones-guide-to-mechanistic-interpretability",
     },
     {
+        "id": 3,
         "title": "Toy Models of Superposition — Anthropic (crosspost)",
         "url": "https://www.lesswrong.com/posts/CTh74TaWgvRiXnkS6/toy-models-of-superposition",
     },
     {
+        "id": 4,
         "title": "Some Lessons Learned from Studying Indirect Object Identification in GPT-2 small — Redwood Research",
         "url": "https://www.lesswrong.com/posts/3ecs6duLmTfyra3Gp/some-lessons-learned-from-studying-indirect-object",
     },
     {
+        "id": 5,
         "title": "Explaining the Transformer Circuits Framework by Example",
         "url": "https://www.lesswrong.com/posts/CJsxd8ofLjGFxkmAP/explaining-the-transformer-circuits-framework-by-example",
     },
