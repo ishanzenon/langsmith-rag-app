@@ -23,12 +23,34 @@ if os.getenv("LANGSMITH_API_KEY"):
 if os.getenv("OPENAI_API_KEY"):
     os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
+if os.getenv("LANGSMITH_PROJECT"):
+    os.environ["LANGSMITH_PROJECT"] = os.getenv("LANGSMITH_PROJECT")
+
 # List of URLs to load documents from
-urls = [
-    "https://lilianweng.github.io/posts/2023-06-23-agent/",
-    "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/",
-    "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
+lesswrong_posts = [
+    {
+        "title": "Mechanistic Interpretability Quickstart Guide — Neel Nanda",
+        "url": "https://www.lesswrong.com/posts/jLAvJt8wuSFySN975/mechanistic-interpretability-quickstart-guide",
+    },
+    {
+        "title": "A Barebones Guide to Mechanistic Interpretability Prerequisites — Neel Nanda",
+        "url": "https://www.lesswrong.com/posts/AaABQpuoNC8gpHf2n/a-barebones-guide-to-mechanistic-interpretability",
+    },
+    {
+        "title": "Toy Models of Superposition — Anthropic (crosspost)",
+        "url": "https://www.lesswrong.com/posts/CTh74TaWgvRiXnkS6/toy-models-of-superposition",
+    },
+    {
+        "title": "Some Lessons Learned from Studying Indirect Object Identification in GPT-2 small — Redwood Research",
+        "url": "https://www.lesswrong.com/posts/3ecs6duLmTfyra3Gp/some-lessons-learned-from-studying-indirect-object",
+    },
+    {
+        "title": "Explaining the Transformer Circuits Framework by Example",
+        "url": "https://www.lesswrong.com/posts/CJsxd8ofLjGFxkmAP/explaining-the-transformer-circuits-framework-by-example",
+    },
 ]
+
+urls = [post["url"] for post in lesswrong_posts]
 
 
 
@@ -56,7 +78,7 @@ retriever = vectorstore.as_retriever(k=6)
 llm = ChatOpenAI(model="gpt-4o", temperature=0.001)
 
 # Add decorator so this function is traced in LangSmith
-@traceable()
+@traceable(project_name="genai-labs-tracing-project", name="RAG Bot")
 def rag_bot(question: str) -> dict:
     # langchain Retriever will be automatically traced
     docs = retriever.invoke(question)
@@ -83,21 +105,49 @@ client = Client()
 # Define the examples for the dataset
 examples = [
     {
-        "inputs": {"question": "How does the ReAct agent use self-reflection? "},
-        "outputs": {"answer": "ReAct integrates reasoning and acting, performing actions - such tools like Wikipedia search API - and then observing / reasoning about the tool outputs."},
+        "inputs": {"question": "In Neel Nanda’s Quickstart Guide, what is the goal of mechanistic interpretability?"},
+        "outputs": {"answer": "To reverse-engineer trained networks—like reversing a program from its binary—to understand the internal algorithms and cognition."},
     },
     {
-        "inputs": {"question": "What are the types of biases that can arise with few-shot prompting?"},
-        "outputs": {"answer": "The biases that can arise with few-shot prompting include (1) Majority label bias, (2) Recency bias, and (3) Common token bias."},
+        "inputs": {"question": "According to the Quickstart Guide, what minimal setup is recommended to start practical transformer MI work?"},
+        "outputs": {"answer": "Copy the TransformerLens demo into a Google Colab with a free GPU and experiment on a small model."},
     },
     {
-        "inputs": {"question": "What are five types of adversarial attacks?"},
-        "outputs": {"answer": "Five types of adversarial attacks are (1) Token manipulation, (2) Gradient based attack, (3) Jailbreak prompting, (4) Human red-teaming, (5) Model red-teaming."},
+        "inputs": {"question": "Which architecture does the Barebones Guide say you must deeply understand for MI, and which variant is most relevant?"},
+        "outputs": {"answer": "Transformers, especially decoder-only GPT-style models like GPT-2."},
+    },
+    {
+        "inputs": {"question": "Which two tensor tools does the Barebones Guide strongly recommend to avoid common PyTorch pitfalls?"},
+        "outputs": {"answer": "einops for reshaping and einsum for tensor multiplication."},
+    },
+    {
+        "inputs": {"question": "In ‘Toy Models of Superposition’, what is superposition and why is it useful?"},
+        "outputs": {"answer": "Representing more features than dimensions; with sparse features this compresses information, though it introduces interference requiring nonlinear filtering."},
+    },
+    {
+        "inputs": {"question": "In the toy example from ‘Toy Models of Superposition’, what changes when features become sparse?"},
+        "outputs": {"answer": "The model stores additional features in superposition instead of just learning an orthogonal basis for the top features."},
+    },
+    {
+        "inputs": {"question": "What is the IOI task Redwood studied, and how large was the circuit they found?"},
+        "outputs": {"answer": "Choosing the correct recipient in sentences like “... gave a drink to ...”; they found a 26-head attention circuit grouped into seven classes."},
+    },
+    {
+        "inputs": {"question": "Name one interaction phenomenon between attention heads observed in the IOI work."},
+        "outputs": {"answer": "Heads communicate with pointers—passing positions rather than copying content."},
+    },
+    {
+        "inputs": {"question": "What does the transformer circuits framework help you do when understanding models?"},
+        "outputs": {"answer": "Decompose a transformer into identifiable parts (circuits/effective weights) so the overall model is more tractable to analyze."},
+    },
+    {
+        "inputs": {"question": "Which large multi-head circuit example is cited in the ‘Transformer Circuits Framework’ post?"},
+        "outputs": {"answer": "The 26-head mechanism for detecting indirect objects (IOI) in GPT-2 small."},
     },
 ]
 
 # Create the dataset and examples in LangSmith
-dataset_name = "Lilian Weng Blogs Q&A"
+dataset_name = "LessWrong Mech Interp Blogs Q&A"
 if not client.has_dataset(dataset_name=dataset_name):
     dataset = client.create_dataset(dataset_name=dataset_name)
     client.create_examples(
@@ -255,8 +305,8 @@ def target(inputs: dict) -> dict:
 experiment_results = client.evaluate(
     target,
     data=dataset_name,
-    evaluators=[correctness, groundedness, relevance, retrieval_relevance],
-    experiment_prefix="rag-doc-relevance",
+    evaluators=[correctness, retrieval_relevance],
+    experiment_prefix="genai-labs-experiment",
     metadata={"version": "LCEL context, gpt-4-0125-preview"},
 )
 
