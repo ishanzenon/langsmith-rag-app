@@ -10,8 +10,10 @@ from typing import Any, Dict
 
 from langchain_core.documents import Document
 from langchain_text_splitters.base import TextSplitter
+from langchain_core.vectorstores import InMemoryVectorStore
+from langchain_core.vectorstores.base import VectorStoreRetriever
 
-from . import ingestion, sources
+from . import ingestion, sources, vectorstore
 from .services import Services, build_services
 
 
@@ -34,12 +36,39 @@ def run_ingestion() -> Dict[str, Any]:
     }
 
 
+def build_vectorstore_state(
+    *,
+    documents: tuple[Document, ...],
+    services: Services,
+    retriever_k: int | None = None,
+) -> Dict[str, Any]:
+    """Create the vector store and retriever mirroring ``langsmith-rag.py``."""
+
+    vector_store: InMemoryVectorStore = vectorstore.build_vectorstore(
+        documents,
+        embeddings=services.embeddings,
+    )
+    retriever: VectorStoreRetriever = vectorstore.get_retriever(
+        vector_store,
+        k=retriever_k,
+    )
+    return {
+        "vector_store": vector_store,
+        "retriever": retriever,
+    }
+
+
 def main() -> Dict[str, Any]:
     """Bootstrap shared services ready for downstream orchestration."""
 
     services: Services = build_services()
     ingestion_state = run_ingestion()
     ingestion_state["services"] = services
+    vector_state = build_vectorstore_state(
+        documents=ingestion_state["document_chunks"],
+        services=services,
+    )
+    ingestion_state.update(vector_state)
     return ingestion_state
 
 
