@@ -26,9 +26,9 @@ class StructuredChatFactory:
     """Callable wrapper around ``ChatOpenAI.with_structured_output`` defaults."""
 
     _chat_model: ChatOpenAI
-    _default_method: Literal[
-        "function_calling", "json_mode", "json_schema"
-    ] = "json_schema"
+    _default_method: Literal["function_calling", "json_mode", "json_schema"] = (
+        "json_schema"
+    )
     _default_strict: bool = True
 
     def __call__(
@@ -69,10 +69,13 @@ def _build_langsmith_client() -> Client:
 def _build_chat_model() -> ChatOpenAI:
     """Provision the chat model used by the core RAG bot."""
 
-    return ChatOpenAI(
-        model=settings.CHAT_MODEL_NAME,
-        temperature=settings.CHAT_TEMPERATURE,
-    )
+    chat_kwargs = {
+        "model": settings.CHAT_MODEL_NAME,
+        "temperature": settings.CHAT_TEMPERATURE,
+    }
+    if settings.CHAT_BASE_URL is not None:
+        chat_kwargs["openai_api_base"] = settings.CHAT_BASE_URL
+    return ChatOpenAI(**chat_kwargs)
 
 
 def _build_structured_chat_model(chat_model: ChatOpenAI) -> StructuredChatFactory:

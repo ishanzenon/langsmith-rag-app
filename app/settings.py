@@ -38,6 +38,7 @@ ENVIRONMENT_KEYS: Final[tuple[str, ...]] = (
     "LANGSMITH_API_KEY",
     "OPENAI_API_KEY",
     "LANGSMITH_PROJECT",
+    "OPENAI_API_BASE_URL",
 )
 
 
@@ -63,6 +64,7 @@ TRACE_RUN_NAME: Final[str] = "RAG Bot"
 # Model defaults for chat and evaluators
 CHAT_MODEL_NAME: Final[str] = "gpt-4o"
 CHAT_TEMPERATURE: Final[float] = 0.001
+CHAT_BASE_URL: Final[Optional[str]] = os.getenv("OPENAI_API_BASE_URL", None)
 
 # Document splitting defaults
 TEXT_SPLITTER_CHUNK_SIZE: Final[int] = 250
