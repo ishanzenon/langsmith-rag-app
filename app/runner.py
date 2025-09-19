@@ -6,7 +6,7 @@ triggering LangSmith evaluations with the appropriate metadata.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Mapping, cast
+from typing import Any, Callable, Dict, cast
 
 from langchain_core.documents import Document
 from langchain_text_splitters.base import TextSplitter
@@ -60,7 +60,9 @@ def build_vectorstore_state(
     }
 
 
-def build_rag_state(*, retriever: VectorStoreRetriever, services: Services) -> Dict[str, Any]:
+def build_rag_state(
+    *, retriever: VectorStoreRetriever, services: Services
+) -> Dict[str, Any]:
     """Instantiate the RAG bot using the provided retriever and chat model."""
 
     rag_bot = build_rag_bot(retriever=retriever, chat_model=services.chat_llm)
@@ -73,7 +75,9 @@ def build_evaluators_state(*, services: Services) -> Dict[str, Any]:
     correctness = evaluators.build_correctness_evaluator(services=services)
     relevance = evaluators.build_relevance_evaluator(services=services)
     groundedness = evaluators.build_groundedness_evaluator(services=services)
-    retrieval_relevance = evaluators.build_retrieval_relevance_evaluator(services=services)
+    retrieval_relevance = evaluators.build_retrieval_relevance_evaluator(
+        services=services
+    )
 
     evaluator_map: Dict[str, BooleanEvaluator] = {
         "correctness": correctness,
@@ -84,7 +88,9 @@ def build_evaluators_state(*, services: Services) -> Dict[str, Any]:
     return {"evaluators": evaluator_map}
 
 
-def _build_target_callable(rag_bot: RAGCallable) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
+def _build_target_callable(
+    rag_bot: RAGCallable,
+) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
     def target(inputs: Dict[str, Any]) -> Dict[str, Any]:
         response: RAGResponse = rag_bot(inputs["question"])
         return cast(Dict[str, Any], response)

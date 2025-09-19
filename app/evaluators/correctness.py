@@ -13,7 +13,11 @@ from app.evaluators.base import (
     build_boolean_evaluator,
 )
 
-__all__ = ["build_correctness_evaluator", "CorrectnessGrade", "correctness_instructions"]
+__all__ = [
+    "build_correctness_evaluator",
+    "CorrectnessGrade",
+    "correctness_instructions",
+]
 
 
 class CorrectnessGrade(TypedDict):

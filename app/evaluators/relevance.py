@@ -42,10 +42,7 @@ def _build_relevance_prompt(
     reference_outputs: Optional[Mapping[str, Any]] = None,
 ) -> str:
     return (
-        "QUESTION: "
-        f"{inputs['question']}\n"
-        "STUDENT ANSWER: "
-        f"{outputs['answer']}"
+        "QUESTION: " f"{inputs['question']}\n" "STUDENT ANSWER: " f"{outputs['answer']}"
     )
 
 

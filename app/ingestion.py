@@ -70,9 +70,7 @@ def load_documents(
     if sources_override is not None:
         selected_sources = tuple(sources_override)
     else:
-        selected_sources = tuple(
-            sources.iter_sources(collection=collection, tags=tags)
-        )
+        selected_sources = tuple(sources.iter_sources(collection=collection, tags=tags))
 
     documents: list[Document] = []
     for source in selected_sources:

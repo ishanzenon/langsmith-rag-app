@@ -26,9 +26,9 @@ class StructuredChatFactory:
     """Callable wrapper around ``ChatOpenAI.with_structured_output`` defaults."""
 
     _chat_model: ChatOpenAI
-    _default_method: Literal["function_calling", "json_mode", "json_schema"] = (
-        "json_schema"
-    )
+    _default_method: Literal[
+        "function_calling", "json_mode", "json_schema"
+    ] = "json_schema"
     _default_strict: bool = True
 
     def __call__(

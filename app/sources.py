@@ -135,6 +135,7 @@ _SOURCE_REGISTRY: Dict[str, DocumentSource] = _build_registry()
 
 # ----- Public API -------------------------------------------------------------
 
+
 def get_source(source_id: str) -> DocumentSource:
     """Return a source by identifier.
 

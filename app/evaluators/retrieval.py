@@ -58,12 +58,7 @@ def _build_retrieval_prompt(
 ) -> str:
     documents = _extract_documents(outputs)
     doc_string = "\n\n".join(doc.page_content for doc in documents)
-    return (
-        "FACTS: "
-        f"{doc_string}\n"
-        "QUESTION: "
-        f"{inputs['question']}"
-    )
+    return "FACTS: " f"{doc_string}\n" "QUESTION: " f"{inputs['question']}"
 
 
 def build_retrieval_relevance_evaluator(*, services: Services) -> BooleanEvaluator:

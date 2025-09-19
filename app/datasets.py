@@ -22,8 +22,6 @@ DatasetExample = settings.DatasetExample
 __all__ = ["DatasetExample", "DatasetState", "ensure_dataset", "ensure_default_dataset"]
 
 
-
-
 @dataclass(frozen=True)
 class DatasetState:
     """Return payload describing the ensured dataset."""

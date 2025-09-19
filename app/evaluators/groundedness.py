@@ -54,12 +54,7 @@ def _build_groundedness_prompt(
 ) -> str:
     documents = _extract_documents(outputs)
     doc_string = "\n\n".join(doc.page_content for doc in documents)
-    return (
-        "FACTS: "
-        f"{doc_string}\n"
-        "STUDENT ANSWER: "
-        f"{outputs['answer']}"
-    )
+    return "FACTS: " f"{doc_string}\n" "STUDENT ANSWER: " f"{outputs['answer']}"
 
 
 def build_groundedness_evaluator(*, services: Services) -> BooleanEvaluator:
