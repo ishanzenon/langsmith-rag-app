@@ -14,6 +14,7 @@ from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.vectorstores.base import VectorStoreRetriever
 
 from . import ingestion, sources, vectorstore
+from .rag import build_rag_bot
 from .services import Services, build_services
 
 
@@ -58,18 +59,30 @@ def build_vectorstore_state(
     }
 
 
+def build_rag_state(*, retriever: VectorStoreRetriever, services: Services) -> Dict[str, Any]:
+    """Instantiate the RAG bot using the provided retriever and chat model."""
+
+    rag_bot = build_rag_bot(retriever=retriever, chat_model=services.chat_llm)
+    return {"rag_bot": rag_bot}
+
+
 def main() -> Dict[str, Any]:
     """Bootstrap shared services ready for downstream orchestration."""
 
     services: Services = build_services()
-    ingestion_state = run_ingestion()
-    ingestion_state["services"] = services
+    pipeline_state = run_ingestion()
+    pipeline_state["services"] = services
     vector_state = build_vectorstore_state(
-        documents=ingestion_state["document_chunks"],
+        documents=pipeline_state["document_chunks"],
         services=services,
     )
-    ingestion_state.update(vector_state)
-    return ingestion_state
+    rag_state = build_rag_state(
+        retriever=vector_state["retriever"],
+        services=services,
+    )
+    pipeline_state.update(vector_state)
+    pipeline_state.update(rag_state)
+    return pipeline_state
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point
