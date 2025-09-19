@@ -1,4 +1,4 @@
-"""Correctness evaluator built on top of the shared boolean scaffolding."""
+"""Correctness evaluator built on top of the shared LLM judge scaffolding."""
 
 from __future__ import annotations
 
@@ -8,9 +8,9 @@ from typing_extensions import Annotated, TypedDict
 
 from app.services import Services
 from app.evaluators.base import (
-    BooleanEvaluator,
-    BooleanEvaluatorSpec,
-    build_boolean_evaluator,
+    LlmJudgeBooleanEvaluator,
+    LlmJudgeBooleanEvaluatorSpec,
+    build_llm_judge_boolean_evaluator,
 )
 
 __all__ = [
@@ -54,17 +54,17 @@ def _build_correctness_prompt(
     )
 
 
-def build_correctness_evaluator(*, services: Services) -> BooleanEvaluator:
+def build_correctness_evaluator(*, services: Services) -> LlmJudgeBooleanEvaluator:
     """Create the correctness evaluator bound to shared services."""
 
-    spec = BooleanEvaluatorSpec(
+    spec = LlmJudgeBooleanEvaluatorSpec(
         schema=CorrectnessGrade,
         instructions=correctness_instructions,
         result_key="correct",
         build_user_message=_build_correctness_prompt,
         require_reference_outputs=True,
     )
-    return build_boolean_evaluator(
+    return build_llm_judge_boolean_evaluator(
         structured_chat_factory=services.structured_chat_llm,
         spec=spec,
     )

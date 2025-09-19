@@ -16,7 +16,7 @@ from langchain_core.vectorstores.base import VectorStoreRetriever
 from app import datasets, evaluators, ingestion, settings, sources, vectorstore
 from app.rag import RAGCallable, RAGResponse, build_rag_bot
 from app.services import Services, build_services
-from app.evaluators.base import BooleanEvaluator
+from app.evaluators.base import LlmJudgeBooleanEvaluator
 
 
 def run_ingestion() -> Dict[str, Any]:
@@ -70,7 +70,7 @@ def build_rag_state(
 
 
 def build_evaluators_state(*, services: Services) -> Dict[str, Any]:
-    """Construct all boolean evaluators backed by shared services."""
+    """Construct all LLM judge evaluators backed by shared services."""
 
     correctness = evaluators.build_correctness_evaluator(services=services)
     relevance = evaluators.build_relevance_evaluator(services=services)
@@ -79,7 +79,7 @@ def build_evaluators_state(*, services: Services) -> Dict[str, Any]:
         services=services
     )
 
-    evaluator_map: Dict[str, BooleanEvaluator] = {
+    evaluator_map: Dict[str, LlmJudgeBooleanEvaluator] = {
         "correctness": correctness,
         "relevance": relevance,
         "groundedness": groundedness,

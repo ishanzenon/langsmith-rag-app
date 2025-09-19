@@ -1,4 +1,4 @@
-"""Relevance evaluator built on the shared boolean scaffolding."""
+"""Relevance evaluator built on the shared LLM judge scaffolding."""
 
 from __future__ import annotations
 
@@ -8,9 +8,9 @@ from typing_extensions import Annotated, TypedDict
 
 from app.services import Services
 from app.evaluators.base import (
-    BooleanEvaluator,
-    BooleanEvaluatorSpec,
-    build_boolean_evaluator,
+    LlmJudgeBooleanEvaluator,
+    LlmJudgeBooleanEvaluatorSpec,
+    build_llm_judge_boolean_evaluator,
 )
 
 __all__ = ["build_relevance_evaluator", "RelevanceGrade", "relevance_instructions"]
@@ -46,16 +46,16 @@ def _build_relevance_prompt(
     )
 
 
-def build_relevance_evaluator(*, services: Services) -> BooleanEvaluator:
+def build_relevance_evaluator(*, services: Services) -> LlmJudgeBooleanEvaluator:
     """Create the relevance evaluator bound to shared services."""
 
-    spec = BooleanEvaluatorSpec(
+    spec = LlmJudgeBooleanEvaluatorSpec(
         schema=RelevanceGrade,
         instructions=relevance_instructions,
         result_key="relevant",
         build_user_message=_build_relevance_prompt,
     )
-    return build_boolean_evaluator(
+    return build_llm_judge_boolean_evaluator(
         structured_chat_factory=services.structured_chat_llm,
         spec=spec,
     )

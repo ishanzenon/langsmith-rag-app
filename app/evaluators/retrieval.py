@@ -1,4 +1,4 @@
-"""Retrieval relevance evaluator built on the shared boolean scaffolding."""
+"""Retrieval relevance evaluator built on the shared LLM judge scaffolding."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from typing_extensions import Annotated, TypedDict
 
 from app.services import Services
 from app.evaluators.base import (
-    BooleanEvaluator,
-    BooleanEvaluatorSpec,
-    build_boolean_evaluator,
+    LlmJudgeBooleanEvaluator,
+    LlmJudgeBooleanEvaluatorSpec,
+    build_llm_judge_boolean_evaluator,
 )
 
 __all__ = [
@@ -61,16 +61,16 @@ def _build_retrieval_prompt(
     return "FACTS: " f"{doc_string}\n" "QUESTION: " f"{inputs['question']}"
 
 
-def build_retrieval_relevance_evaluator(*, services: Services) -> BooleanEvaluator:
+def build_retrieval_relevance_evaluator(*, services: Services) -> LlmJudgeBooleanEvaluator:
     """Create the retrieval relevance evaluator bound to shared services."""
 
-    spec = BooleanEvaluatorSpec(
+    spec = LlmJudgeBooleanEvaluatorSpec(
         schema=RetrievalRelevanceGrade,
         instructions=retrieval_relevance_instructions,
         result_key="relevant",
         build_user_message=_build_retrieval_prompt,
     )
-    return build_boolean_evaluator(
+    return build_llm_judge_boolean_evaluator(
         structured_chat_factory=services.structured_chat_llm,
         spec=spec,
     )

@@ -1,4 +1,4 @@
-"""Groundedness evaluator built on the shared boolean scaffolding."""
+"""Groundedness evaluator built on the shared LLM judge scaffolding."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from typing_extensions import Annotated, TypedDict
 
 from app.services import Services
 from app.evaluators.base import (
-    BooleanEvaluator,
-    BooleanEvaluatorSpec,
-    build_boolean_evaluator,
+    LlmJudgeBooleanEvaluator,
+    LlmJudgeBooleanEvaluatorSpec,
+    build_llm_judge_boolean_evaluator,
 )
 
 __all__ = [
@@ -57,16 +57,16 @@ def _build_groundedness_prompt(
     return "FACTS: " f"{doc_string}\n" "STUDENT ANSWER: " f"{outputs['answer']}"
 
 
-def build_groundedness_evaluator(*, services: Services) -> BooleanEvaluator:
+def build_groundedness_evaluator(*, services: Services) -> LlmJudgeBooleanEvaluator:
     """Create the groundedness evaluator bound to shared services."""
 
-    spec = BooleanEvaluatorSpec(
+    spec = LlmJudgeBooleanEvaluatorSpec(
         schema=GroundedGrade,
         instructions=grounded_instructions,
         result_key="grounded",
         build_user_message=_build_groundedness_prompt,
     )
-    return build_boolean_evaluator(
+    return build_llm_judge_boolean_evaluator(
         structured_chat_factory=services.structured_chat_llm,
         spec=spec,
     )

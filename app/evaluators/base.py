@@ -1,4 +1,4 @@
-"""Shared evaluator scaffolding for LangSmith boolean graders.
+"""Shared evaluator scaffolding for LangSmith LLM-judge boolean graders.
 
 Provides a reusable abstraction so individual evaluator modules only define the
 schema, instructions, and message formatting logic. Invocation and structured
@@ -14,7 +14,11 @@ from langchain_core.runnables.base import Runnable
 
 from app.services import StructuredChatFactory
 
-__all__ = ["BooleanEvaluatorSpec", "build_boolean_evaluator", "BooleanEvaluator"]
+__all__ = [
+    "LlmJudgeBooleanEvaluatorSpec",
+    "build_llm_judge_boolean_evaluator",
+    "LlmJudgeBooleanEvaluator",
+]
 
 
 SchemaT = TypeVar("SchemaT", bound=Mapping[str, Any])
@@ -23,8 +27,8 @@ Outputs = Mapping[str, Any]
 ReferenceOutputs = Mapping[str, Any]
 
 
-class BooleanEvaluator(Protocol):
-    """Callable protocol for LangSmith-style boolean evaluators."""
+class LlmJudgeBooleanEvaluator(Protocol):
+    """Callable protocol for LangSmith-style LLM judge evaluators."""
 
     def __call__(
         self,
@@ -39,8 +43,8 @@ MessageBuilder = Callable[[Inputs, Outputs, Optional[ReferenceOutputs]], str]
 
 
 @dataclass(frozen=True)
-class BooleanEvaluatorSpec(Generic[SchemaT]):
-    """Configuration required to assemble a boolean evaluator."""
+class LlmJudgeBooleanEvaluatorSpec(Generic[SchemaT]):
+    """Configuration required to assemble an LLM-judge boolean evaluator."""
 
     schema: type[SchemaT]
     instructions: str
@@ -50,12 +54,12 @@ class BooleanEvaluatorSpec(Generic[SchemaT]):
     structured_kwargs: Mapping[str, Any] | None = None
 
 
-def build_boolean_evaluator(
+def build_llm_judge_boolean_evaluator(
     *,
     structured_chat_factory: StructuredChatFactory,
-    spec: BooleanEvaluatorSpec[SchemaT],
-) -> BooleanEvaluator:
-    """Create a boolean evaluator bound to the provided structured chat factory."""
+    spec: LlmJudgeBooleanEvaluatorSpec[SchemaT],
+) -> LlmJudgeBooleanEvaluator:
+    """Create an LLM-judge boolean evaluator bound to the structured chat factory."""
 
     grader: Runnable[Any, SchemaT | Dict[str, Any]] = structured_chat_factory(
         spec.schema,
