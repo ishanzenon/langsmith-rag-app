@@ -13,7 +13,7 @@ from langchain_text_splitters.base import TextSplitter
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.vectorstores.base import VectorStoreRetriever
 
-from . import ingestion, sources, vectorstore
+from . import datasets, ingestion, sources, vectorstore
 from .rag import build_rag_bot
 from .services import Services, build_services
 
@@ -70,8 +70,10 @@ def main() -> Dict[str, Any]:
     """Bootstrap shared services ready for downstream orchestration."""
 
     services: Services = build_services()
+    dataset_state = datasets.ensure_default_dataset(services)
     pipeline_state = run_ingestion()
     pipeline_state["services"] = services
+    pipeline_state["dataset_state"] = dataset_state
     vector_state = build_vectorstore_state(
         documents=pipeline_state["document_chunks"],
         services=services,
