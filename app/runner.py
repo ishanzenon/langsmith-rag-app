@@ -6,16 +6,17 @@ triggering LangSmith evaluations with the appropriate metadata.
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Mapping, cast
 
 from langchain_core.documents import Document
 from langchain_text_splitters.base import TextSplitter
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.vectorstores.base import VectorStoreRetriever
 
-from . import datasets, ingestion, sources, vectorstore
-from .rag import build_rag_bot
+from . import datasets, evaluators, ingestion, settings, sources, vectorstore
+from .rag import RAGCallable, RAGResponse, build_rag_bot
 from .services import Services, build_services
+from .evaluators.base import BooleanEvaluator
 
 
 def run_ingestion() -> Dict[str, Any]:
@@ -66,6 +67,31 @@ def build_rag_state(*, retriever: VectorStoreRetriever, services: Services) -> D
     return {"rag_bot": rag_bot}
 
 
+def build_evaluators_state(*, services: Services) -> Dict[str, Any]:
+    """Construct all boolean evaluators backed by shared services."""
+
+    correctness = evaluators.build_correctness_evaluator(services=services)
+    relevance = evaluators.build_relevance_evaluator(services=services)
+    groundedness = evaluators.build_groundedness_evaluator(services=services)
+    retrieval_relevance = evaluators.build_retrieval_relevance_evaluator(services=services)
+
+    evaluator_map: Dict[str, BooleanEvaluator] = {
+        "correctness": correctness,
+        "relevance": relevance,
+        "groundedness": groundedness,
+        "retrieval_relevance": retrieval_relevance,
+    }
+    return {"evaluators": evaluator_map}
+
+
+def _build_target_callable(rag_bot: RAGCallable) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
+    def target(inputs: Dict[str, Any]) -> Dict[str, Any]:
+        response: RAGResponse = rag_bot(inputs["question"])
+        return cast(Dict[str, Any], response)
+
+    return target
+
+
 def main() -> Dict[str, Any]:
     """Bootstrap shared services ready for downstream orchestration."""
 
@@ -82,8 +108,25 @@ def main() -> Dict[str, Any]:
         retriever=vector_state["retriever"],
         services=services,
     )
+    evaluator_state = build_evaluators_state(services=services)
+    target = _build_target_callable(rag_state["rag_bot"])
+    evaluator_sequence = [
+        evaluator_state["evaluators"]["correctness"],
+        evaluator_state["evaluators"]["relevance"],
+        evaluator_state["evaluators"]["groundedness"],
+        evaluator_state["evaluators"]["retrieval_relevance"],
+    ]
+    experiment_results = services.client.evaluate(
+        target,
+        data=settings.LESSWRONG_DATASET_NAME,
+        evaluators=evaluator_sequence,
+        experiment_prefix=settings.EXPERIMENT_PREFIX,
+        metadata={"version": settings.EXPERIMENT_METADATA_VERSION},
+    )
     pipeline_state.update(vector_state)
     pipeline_state.update(rag_state)
+    pipeline_state.update(evaluator_state)
+    pipeline_state["experiment_results"] = experiment_results
     return pipeline_state
 
 
