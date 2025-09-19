@@ -16,7 +16,7 @@ from langchain_core.vectorstores.base import VectorStoreRetriever
 from app import datasets, evaluators, ingestion, settings, sources, vectorstore
 from app.rag import RAGCallable, RAGResponse, build_rag_bot
 from app.services import Services, build_services
-from app.evaluators.base import LlmJudgeBooleanEvaluator
+from app.evaluators.llm_as_judge import LlmJudgeBooleanEvaluator
 
 
 def run_ingestion() -> Dict[str, Any]:

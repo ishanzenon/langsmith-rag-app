@@ -7,7 +7,7 @@ from typing import Any, Mapping, Optional
 from typing_extensions import Annotated, TypedDict
 
 from app.services import Services
-from app.evaluators.base import (
+from app.evaluators.llm_as_judge.base import (
     LlmJudgeBooleanEvaluator,
     LlmJudgeBooleanEvaluatorSpec,
     build_llm_judge_boolean_evaluator,

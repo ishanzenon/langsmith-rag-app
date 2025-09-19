@@ -35,7 +35,7 @@ The command performs the following steps:
 - Ensures the LangSmith evaluation dataset exists (creating it on first run).
 - Fetches and chunks the LessWrong blog posts.
 - Builds an in-memory vector store backed by OpenAI embeddings.
-- Instantiates the RAG bot and boolean evaluators.
+- Instantiates the RAG bot and LLM-as-judge evaluators.
 - Executes `langsmith.Client.evaluate` with the configured evaluators and metadata.
 
 ## Running the Original Script
@@ -58,15 +58,14 @@ Keep this script unchanged if you need a one-file reference or want to compare b
 | `app/vectorstore.py` | Wraps `InMemoryVectorStore` setup and retriever creation. | `build_vectorstore()`, `get_retriever()` |
 | `app/rag.py` | Defines the LangSmith-traced RAG bot, including prompt assembly. | `build_rag_bot()` |
 | `app/datasets.py` | Ensures the LangSmith dataset and seed examples exist. | `ensure_default_dataset()` |
-| `app/evaluators/` | Houses reusable boolean evaluators for correctness, relevance, groundedness, and retrieval relevance. | `build_*_evaluator()` helpers |
+| `app/evaluators/` | Aggregates evaluator builders; `llm_as_judge/` houses the LLM-as-judge boolean graders for correctness, relevance, groundedness, and retrieval relevance. | `build_*_evaluator()` helpers |
 | `app/runner.py` | Entry point that wires all modules together and calls `Client.evaluate`. | `main()` |
 
 ## Troubleshooting
 - **Import errors when running the app:** Always invoke the runner as a module (`python -m app.runner`) or set `PYTHONPATH=.` when executing scripts directly.
 - **Missing API keys:** Confirm `.env` exists and contains valid `OPENAI_API_KEY`, `LANGSMITH_API_KEY`, and (optionally) `LANGSMITH_PROJECT`/`LANGSMITH_TRACING`.
-- **Evaluator cost/latency differences:** The modular runner wires all four boolean evaluators by default. Adjust `app/runner.py` if you want parity with the original script, which only runs correctness and retrieval evaluators.
+- **Evaluator cost/latency differences:** The modular runner wires all four LLM-as-judge evaluators by default. Adjust `app/runner.py` if you want parity with the original script, which only runs correctness and retrieval evaluators.
 
 ## Additional Resources
 - Project structure rationale: `Project Structure Plan.md`
 - Original tutorial reference: [Evaluate a RAG application | LangSmith](https://docs.langchain.com/langsmith/evaluate-rag-tutorial)
-
