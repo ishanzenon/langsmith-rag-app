@@ -68,5 +68,5 @@ Keep this script unchanged if you need a one-file reference or want to compare b
 
 ## Additional Resources
 - Project structure rationale: `Project Structure Plan.md`
-- Original tutorial reference: LangSmith RAG Quickstart (LangChain documentation)
+- Original tutorial reference: [Evaluate a RAG application | LangSmith](https://docs.langchain.com/langsmith/evaluate-rag-tutorial)
 
