@@ -6,7 +6,9 @@ Structured reference implementation of the LangSmith Retrieval-Augmented Generat
 - Python 3.10+
 - pip (or an equivalent package manager)
 - LangSmith account and API key
-- OpenAI API key (for both chat completions and embeddings)
+- OpenAI / Groq / Fireworks API key (for both chat completions and embeddings)
+
+> Note: When opting for Groq / Fireworks as your LLM provider please also populate the environment variable ``OPENAI_API_BASE_URL`` accordingly for your LLM provider. Refer to [Groq OpenAI Compatibility](https://console.groq.com/docs/openai) and [Fireworks OpenAI Compatibility](https://docs.fireworks.ai/tools-sdks/openai-compatibility) for more details.
 
 Install the Python dependencies:
 
