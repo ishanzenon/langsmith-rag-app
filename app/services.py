@@ -14,7 +14,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langsmith import Client
 from langchain_core.runnables.base import Runnable
 
-from . import settings
+from app import settings
 
 __all__ = ["Services", "build_services"]
 

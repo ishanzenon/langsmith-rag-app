@@ -13,10 +13,10 @@ from langchain_text_splitters.base import TextSplitter
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.vectorstores.base import VectorStoreRetriever
 
-from . import datasets, evaluators, ingestion, settings, sources, vectorstore
-from .rag import RAGCallable, RAGResponse, build_rag_bot
-from .services import Services, build_services
-from .evaluators.base import BooleanEvaluator
+from app import datasets, evaluators, ingestion, settings, sources, vectorstore
+from app.rag import RAGCallable, RAGResponse, build_rag_bot
+from app.services import Services, build_services
+from app.evaluators.base import BooleanEvaluator
 
 
 def run_ingestion() -> Dict[str, Any]:

@@ -12,8 +12,8 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.base import TextSplitter
 
-from . import settings, sources
-from .sources import DocumentSource
+from app import settings, sources
+from app.sources import DocumentSource
 
 __all__ = [
     "build_text_splitter",

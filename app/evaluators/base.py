@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, Generic, Mapping, Optional, Protocol, Ty
 
 from langchain_core.runnables.base import Runnable
 
-from ..services import StructuredChatFactory
+from app.services import StructuredChatFactory
 
 __all__ = ["BooleanEvaluatorSpec", "build_boolean_evaluator", "BooleanEvaluator"]
 

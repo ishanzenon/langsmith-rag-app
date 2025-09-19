@@ -14,7 +14,7 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.vectorstores.base import VectorStoreRetriever
 
-from . import settings
+from app import settings
 
 __all__ = ["build_vectorstore", "get_retriever"]
 

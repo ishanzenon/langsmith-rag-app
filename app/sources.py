@@ -26,7 +26,7 @@ from langchain_core.documents import Document
 
 from langchain_community.document_loaders import WebBaseLoader
 
-from . import settings
+from app import settings
 
 
 LoaderFactory = Callable[[], BaseLoader]

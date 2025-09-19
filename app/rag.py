@@ -14,7 +14,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.vectorstores.base import VectorStoreRetriever
 from langsmith import traceable
 
-from . import settings
+from app import settings
 
 __all__ = ["RAGResponse", "RAGCallable", "build_rag_bot"]
 

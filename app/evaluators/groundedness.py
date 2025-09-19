@@ -7,8 +7,12 @@ from typing import Any, Mapping, Optional, Sequence
 from langchain_core.documents import Document
 from typing_extensions import Annotated, TypedDict
 
-from ..services import Services
-from .base import BooleanEvaluator, BooleanEvaluatorSpec, build_boolean_evaluator
+from app.services import Services
+from app.evaluators.base import (
+    BooleanEvaluator,
+    BooleanEvaluatorSpec,
+    build_boolean_evaluator,
+)
 
 __all__ = [
     "build_groundedness_evaluator",
@@ -71,4 +75,3 @@ def build_groundedness_evaluator(*, services: Services) -> BooleanEvaluator:
         structured_chat_factory=services.structured_chat_llm,
         spec=spec,
     )
-

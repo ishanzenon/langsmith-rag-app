@@ -14,8 +14,8 @@ from typing import Any, Sequence
 
 from langsmith import Client
 
-from . import settings
-from .services import Services
+from app import settings
+from app.services import Services
 
 DatasetExample = settings.DatasetExample
 

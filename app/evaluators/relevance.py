@@ -6,8 +6,12 @@ from typing import Any, Mapping, Optional
 
 from typing_extensions import Annotated, TypedDict
 
-from ..services import Services
-from .base import BooleanEvaluator, BooleanEvaluatorSpec, build_boolean_evaluator
+from app.services import Services
+from app.evaluators.base import (
+    BooleanEvaluator,
+    BooleanEvaluatorSpec,
+    build_boolean_evaluator,
+)
 
 __all__ = ["build_relevance_evaluator", "RelevanceGrade", "relevance_instructions"]
 
